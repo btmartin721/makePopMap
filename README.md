@@ -1,5 +1,5 @@
 Author: 
-Bradley T. Martin, University of Arkansas
+Bradley T. Martin, University of Arkansas; 
 E-mail: btm002@email.uark.edu
 
 Python 2.7 Script to add a population map to a structure file.
