@@ -5,7 +5,6 @@ import re
 import sys
 import os.path
 
-
 # Uses argparse library to parse command-line arguments; argparse must be imported
 def Get_Arguments():
 
@@ -32,9 +31,9 @@ def read_infile(infile):
         col = []
         for line in fin:
             line = line.rstrip("\r\n")
-            columns = line.split()
-            whole_line.append(line.strip().split())
-            col.append(columns[0])
+            columns = line.strip().split()
+            whole_line.append(columns)
+            col.append(columns[0])          #### Sample IDs
         
         numcols = len(columns)
         
@@ -46,30 +45,28 @@ def read_infile(infile):
 def get_unique_identifiers(input_list, startchar, endchar, found=None):
 
     if found is None:
-        def found(list):
-            return list
+        def found(lst):
+            return lst
     
     hit = {}
     unique_ID = []
-    temp_list = []    
-    
+
     for item in input_list:
-        temp_list = item[startchar-1:endchar]
-        marker = found(temp_list)
+        temp_lst = item[startchar-1:endchar]
+        marker = found(temp_lst)
         
         if marker in hit:
             continue
         
         hit[marker] = 1
         
-        unique_ID.append(temp_list)
-    
+        unique_ID.append(temp_lst)
+
     return unique_ID
 
 # Function to count each popID and associate the count with the sampleID
-def add_popID(uniqueIDs, sampleIDs, whole_line, numcols):
+def sum_popids(uniqueIDs, sampleIDs, whole_line, numcols):
     
-    popcount = 0
     for popcount, uniq in enumerate(uniqueIDs, 1):
         for sample in range(len(sampleIDs)):
             if re.search(uniq, sampleIDs[sample]):
@@ -149,7 +146,7 @@ samples, whole_line, numcols = read_infile(arguments.file)
 unique_IDs = get_unique_identifiers(samples, arguments.start, arguments.end)
 
 # Function to count each popID and associate the count with the sampleID
-popID = add_popID(unique_IDs, samples, whole_line, numcols)
+popID = sum_popids(unique_IDs, samples, whole_line, numcols)
 
 # Writes the modified structure file
 write_popID_2_file(popID, arguments.outfile)
