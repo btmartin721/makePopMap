@@ -12,13 +12,14 @@ def Get_Arguments():
 
     parser.add_argument("-f", "--file", type=str, required=True, help="Input filename")
     parser.add_argument("-o", "--outfile", type=str, required=False,
-                        help="Output filename; Default = out.str", nargs="?", default="out.str")
+                        help="Output filename; Default = out.txt", nargs="?", default="out.txt")
     parser.add_argument("-s", "--start", type=int, required=False, nargs="?", default="1",
                         help="Specify first character of sample ID to be used as pattern for population ID; default=1")
     parser.add_argument("-e", "--end", type=int, required=False, nargs="?", default="4",
                         help="Specify last character of sample ID to be used as pattern for population ID; default=4")
     parser.add_argument("-p", "--popmap", action="store_true", help="Boolean; If flag is used, just writes a popmap to file")
-    parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; If flag is used, specifies PHYLIP input file")
+    parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; If flag is used, specifies PHYLIP input/output file")
+    parser.add_argument("-a", "--admixture", action="store_true", help="Boolean; If used, specifies .ped input/output file")
 
     args = parser.parse_args()
 
@@ -78,6 +79,9 @@ with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
     if arguments.phylip:
         header = fin.readline()
 
+    if arguments.phylip and not arguments.popmap:
+        fout.write(str(header))
+
     for lines in fin:
         ids, loc = read_infile(lines)
 
@@ -91,9 +95,18 @@ with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
 
         popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
 
-        if arguments.popmap:
-            # Only writes two-column popmap to file if -p flag is used
+        if arguments.admixture and not arguments.popmap:
+            # Writes popIDs to file in .ped format
+            fout.write(str(patt) + "\t" + str(dataset.loci) + "\n")
+
+        elif arguments.admixture and arguments.popmap:
+            # If popmap flag: Writes PopMap file only
             make_popmap(dataset.id, popid)
+
+        elif arguments.popmap:
+            # if -p flag: Only writes two-column popmap to file
+            make_popmap(dataset.id, popid)
+
         else:
             # Write STRUCTURE file with popIDs inserted
             fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")
