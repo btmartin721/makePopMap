@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96ac7f38-bb80-4443-8b01-109ebf4e4a5c" name="Default" comment="Adding object orientation and speed improvements; not completed yet">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/order.txt" afterPath="" />
-    </list>
+    <list default="true" id="96ac7f38-bb80-4443-8b01-109ebf4e4a5c" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -205,7 +201,14 @@
       <option name="project" value="LOCAL" />
       <updated>1517368307411</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added object orientation, speed improvements, and option to write only popmap (sampleIDs \t popIDs) to file">
+      <created>1517368799140</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1517368799140</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -238,7 +241,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added object orientation and speed improvements" />
     <MESSAGE value="Adding object orientation and speed improvements; not completed yet" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding object orientation and speed improvements; not completed yet" />
+    <MESSAGE value="Added object orientation, speed improvements, and option to write only popmap (sampleIDs \t popIDs) to file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added object orientation, speed improvements, and option to write only popmap (sampleIDs \t popIDs) to file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
