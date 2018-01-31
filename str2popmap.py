@@ -17,6 +17,7 @@ def Get_Arguments():
                         help="Specify first character of sample ID to be used as pattern for population ID; default=1")
     parser.add_argument("-e", "--end", type=int, required=False, nargs="?", default="4",
                         help="Specify last character of sample ID to be used as pattern for population ID; default=4")
+    parser.add_argument("-p", "--popmap", action="store_true", help="Boolean; If flag is used, just writes a popmap to file")
 
     args = parser.parse_args()
 
@@ -32,22 +33,20 @@ def read_infile(line):
 
     return ids, loc
 
-# Gets the population identifier from sampleIDs in a column
-# The first X letters of the string in the specified column are extracted
-# Characters to extract are specified by the command-line flags -s and -e	
+# Gets population identifiers and adds 1 if ID is not already in dictionary
+# Returns popID number
 def get_unique_identifiers(pattern, hit, number):
 
     if not hit:
-        hit[pattern] = number
-
+        dataset.make_dict(number, hit, pattern)
 
     elif pattern not in hit:
         number += 1
-        hit[pattern] = number
+        dataset.make_dict(number, hit, pattern)
 
     return number
 
-# Check to make sure input file exists or die
+# Check to make sure input file exists or else die
 def check_if_exists(filename):
 
     try:
@@ -56,6 +55,9 @@ def check_if_exists(filename):
         print("\nError: The file " + filename + " does not exist.\n")
         sys.exit(1)
 
+def make_popmap(sample, pop):
+
+    fout.write(str(sample) + "\t" + str(pop) + "\n")
 
 ################################################################################################################
 ##############################################    MAIN    ######################################################
@@ -77,11 +79,17 @@ with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
 
         # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
         dataset = Struct(ids, loc)
+
+        # pattern = characters arguments.start to arguments.end in dataset.id
         patt = dataset.id[arguments.start-1:arguments.end]
 
-        popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID
+        popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID and adds 1 for each unique ID
 
         popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
 
-        # Write modified file structure with popIDs inserted
-        fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")
+        if arguments.popmap:
+            # Only writes two-column popmap to file if -p flag is used
+            make_popmap(dataset.id, popid)
+        else:
+            # Write STRUCTURE file with popIDs inserted
+            fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")
