@@ -18,6 +18,7 @@ def Get_Arguments():
     parser.add_argument("-e", "--end", type=int, required=False, nargs="?", default="4",
                         help="Specify last character of sample ID to be used as pattern for population ID; default=4")
     parser.add_argument("-p", "--popmap", action="store_true", help="Boolean; If flag is used, just writes a popmap to file")
+    parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; If flag is used, specifies PHYLIP input file")
 
     args = parser.parse_args()
 
@@ -73,6 +74,9 @@ unique_ids = {}
 popnum = 1
 
 with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
+
+    if arguments.phylip:
+        header = fin.readline()
 
     for lines in fin:
         ids, loc = read_infile(lines)
