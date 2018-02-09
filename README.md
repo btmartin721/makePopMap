@@ -2,8 +2,9 @@ Author:
 Bradley T. Martin, University of Arkansas; 
 E-mail: btm002@email.uark.edu
 
-Python 2.7 Script to add a population map to STRUCTURE, PHYLIP, and .ped (ADMIXTURE) formats
-Must use Python 2.7 or later versions
+Python Script to add a population map to STRUCTURE, PHYLIP, and .ped (ADMIXTURE) formats
+
+Uses Python 2 or 3
 
 By default, it uses the first four letters of each sample name to designate populations.
 However, the user can specify a range of characters for the popID search pattern (e.g., 2-5).
