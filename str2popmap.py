@@ -20,6 +20,7 @@ def Get_Arguments():
     parser.add_argument("-p", "--popmap", action="store_true", help="Boolean; If flag is used, just writes a popmap to file")
     parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; If flag is used, specifies PHYLIP input/output file")
     parser.add_argument("-a", "--admixture", action="store_true", help="Boolean; If used, specifies .ped input/output file")
+    parser.add_argument("-c", "--chars", action="store_true", help="Boolean; outputs population pattern instead of integer")
 
     args = parser.parse_args()
 
@@ -74,40 +75,43 @@ unique_ids = {}
 
 popnum = 1
 
-with open(arguments.file, "r") as fin:
-    with open(arguments.outfile, "w") as fout:
+with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
 
-        if arguments.phylip:
-            header = fin.readline()
+    if arguments.phylip:
+        header = fin.readline()
 
-        if arguments.phylip and not arguments.popmap:
-            fout.write(str(header))
+    if arguments.phylip and not arguments.popmap:
+        fout.write(str(header))
 
-        for lines in fin:
-            ids, loc = read_infile(lines)
+    for lines in fin:
+        ids, loc = read_infile(lines)
 
-            # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
-            dataset = Struct(ids, loc)
+        # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
+        dataset = Struct(ids, loc)
 
-            # pattern = characters arguments.start to arguments.end in dataset.id
-            patt = dataset.id[arguments.start-1:arguments.end]
+        # pattern = characters arguments.start to arguments.end in dataset.id
+        patt = dataset.id[arguments.start-1:arguments.end]
 
-            popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID and adds 1 for each unique ID
+        popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID and adds 1 for each unique ID
 
-            popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
+        popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
+    
+        if arguments.admixture and not arguments.popmap:
+            # Writes popIDs to file in .ped format
+            fout.write(str(patt) + "\t" + str(dataset.loci) + "\n")
 
-            if arguments.admixture and not arguments.popmap:
-                # Writes popIDs to file in .ped format
-                fout.write(str(patt) + "\t" + str(dataset.loci) + "\n")
+        elif arguments.admixture and arguments.popmap:
+            # If popmap flag: Writes PopMap file only
+            make_popmap(dataset.id, popid)
 
-            elif arguments.admixture and arguments.popmap:
-                # If popmap flag: Writes PopMap file only
-                make_popmap(dataset.id, popid)
+        elif arguments.popmap and arguments.chars:
+            # Writes popmap with regex pattern for popID instead of integers
+            make_popmap(dataset.id, str(patt))
+            
+        elif arguments.popmap:
+            # if -p flag: Only writes two-column popmap to file
+            make_popmap(dataset.id, popid)
 
-            elif arguments.popmap:
-                # if -p flag: Only writes two-column popmap to file
-                make_popmap(dataset.id, popid)
-
-            else:
-                # Write STRUCTURE file with popIDs inserted
-                fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")
+        else:
+            # Write STRUCTURE file with popIDs inserted
+            fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")

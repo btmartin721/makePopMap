@@ -21,6 +21,7 @@ to make PopIDs
 
 -a option (Boolean; default = off) Uses .ped format for input/output files
 
+-c option (Boolean; default = off) Outputs string as popID instead of integer
 
 Usage: ./str2popmap.py -f INFILE
 
@@ -32,3 +33,4 @@ Optional arguments:
 [-p POPMAP (Boolean); default = False]
 [-t PHYLIP (Boolean); default = False]
 [-a ADMIXTURE (Boolean); default = False]
+[-c CHARREGEX (Boolean); derfault = False]
