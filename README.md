@@ -16,14 +16,12 @@ to make PopIDs`
 
 -p option (Boolean; default = off) only writes two-column sample IDs and popIDs (POPMAP) separated by tabs
 
-e.g.,  
-
-| sampleID   |  popID  |   
-|:----------:|:-------:|
-|    ind1    |  pop1   |
-|    ind2    |  pop1   |  
-|    ind3    |  pop2   |
-|    ind4    |  pop2   |
+```
+ind1\tpop1\n
+ind2\tpop1\n
+ind3\tpop2\n
+ind4\tpop2\n
+```
 
 -t option (Boolean; default = off) Uses PHYLIP format for input/output files  
 -a option (Boolean; default = off) Uses .ped format for input/output files  
