@@ -6,6 +6,8 @@ E-mail: btm002@email.uark.edu*
 
 Uses Python 2 or 3
 
+The program can read PHYLIP and STRUCTURE files by default; use -a option if you want to use a .ped file  
+
 By default, it uses the first four letters of each sample name to designate populations.  
 However, the user can specify a range of characters for the popID search pattern (e.g., 2-5).  
 
@@ -17,11 +19,14 @@ to make PopIDs`
 -p option (Boolean; default = off) only writes two-column sample IDs and popIDs (POPMAP) separated by tabs
 
 ```
+# -p option output
 ind1\tpop1\n
 ind2\tpop1\n
 ind3\tpop2\n
 ind4\tpop2\n
 ```
+
+If you want the POPMAP to be inserted between sampleIDs and sequences, use the -t option without -p
 
 -t option (Boolean; default = off) Uses PHYLIP format for input/output files  
 -a option (Boolean; default = off) Uses .ped format for input/output files  

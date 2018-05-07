@@ -61,6 +61,25 @@ def check_if_exists(filename):
 def make_popmap(sample, pop):
 
     fout.write(str(sample) + "\t" + str(pop) + "\n")
+    
+def check_if_phylip(infile):
+
+    f = open(infile, "r")
+    first_line = f.readline()
+
+    first_line = first_line.rstrip()
+    cols = first_line.split()
+    nInd = cols[0].strip()
+    nLoci = cols[1].strip()
+
+    f.close()
+
+    if len(cols) == 2 and nInd.isdigit() and nLoci.isdigit():
+        is_phylip = "phylip"
+    else:
+        is_phylip = "not_phylip"
+    
+    return is_phylip
 
 ################################################################################################################
 ##############################################    MAIN    ######################################################
@@ -75,9 +94,15 @@ unique_ids = {}
 
 popnum = 1
 
-with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
+file_type = check_if_phylip(arguments.file)
 
-    if arguments.phylip:
+with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
+    
+    if arguments.phylip and file_type == "not_phylip":
+        print("\n\nError: [-t] option requires phylip formatted infile\n\n")
+        sys.exit(1)
+        
+    if file_type == "phylip":
         header = fin.readline()
 
     if arguments.phylip and not arguments.popmap:
@@ -107,6 +132,9 @@ with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
         elif arguments.popmap and arguments.chars:
             # Writes popmap with regex pattern for popID instead of integers
             make_popmap(dataset.id, str(patt))
+            
+        elif arguments.phylip and not arguments.popmap and arguments.chars:
+            fout.write(dataset.id + "\t" + str(patt) + "\t" + dataset.loci + "\n")
             
         elif arguments.popmap:
             # if -p flag: Only writes two-column popmap to file
