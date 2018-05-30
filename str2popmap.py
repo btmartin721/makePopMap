@@ -96,7 +96,7 @@ popnum = 1
 
 file_type = check_if_phylip(arguments.file)
 
-with open(arguments.file, "r") as fin
+with open(arguments.file, "r") as fin:
     with open(arguments.outfile, "w") as fout:
     
         if arguments.phylip and file_type == "not_phylip":
