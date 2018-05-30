@@ -96,50 +96,50 @@ popnum = 1
 
 file_type = check_if_phylip(arguments.file)
 
-with open(arguments.file, "r") as fin, open(arguments.outfile, "w") as fout:
+with open(arguments.file, "r") as fin
+    with open(arguments.outfile, "w") as fout:
     
-    if arguments.phylip and file_type == "not_phylip":
-        print("\n\nError: [-t] option requires phylip formatted infile\n\n")
-        sys.exit(1)
-        
-    if file_type == "phylip":
-        header = fin.readline()
-
-    if arguments.phylip and not arguments.popmap:
-        fout.write(str(header))
-
-    for lines in fin:
-        ids, loc = read_infile(lines)
-
-        # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
-        dataset = Struct(ids, loc)
-
-        # pattern = characters arguments.start to arguments.end in dataset.id
-        patt = dataset.id[arguments.start-1:arguments.end]
-
-        popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID and adds 1 for each unique ID
-
-        popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
-    
-        if arguments.admixture and not arguments.popmap:
-            # Writes popIDs to file in .ped format
-            fout.write(str(patt) + "\t" + str(dataset.loci) + "\n")
-
-        elif arguments.admixture and arguments.popmap:
-            # If popmap flag: Writes PopMap file only
-            make_popmap(dataset.id, popid)
-
-        elif arguments.popmap and arguments.chars:
-            # Writes popmap with regex pattern for popID instead of integers
-            make_popmap(dataset.id, str(patt))
+        if arguments.phylip and file_type == "not_phylip":
+            print("\n\nError: [-t] option requires phylip formatted infile\n\n")
+            sys.exit(1)
             
-        elif arguments.phylip and not arguments.popmap and arguments.chars:
-            fout.write(dataset.id + "\t" + str(patt) + "\t" + dataset.loci + "\n")
-            
-        elif arguments.popmap:
-            # if -p flag: Only writes two-column popmap to file
-            make_popmap(dataset.id, popid)
+        if file_type == "phylip":
+            header = fin.readline()
 
-        else:
-            # Write STRUCTURE file with popIDs inserted
-            fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")
+        if arguments.phylip and not arguments.popmap:
+            fout.write(str(header))
+
+        for lines in fin:
+            ids, loc = read_infile(lines)
+            # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
+            dataset = Struct(ids, loc)
+            
+            # pattern = characters arguments.start to arguments.end in dataset.id
+            patt = dataset.id[arguments.start-1:arguments.end]
+
+            popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID and adds 1 for each unique ID
+
+            popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
+            
+            if arguments.admixture and not arguments.popmap:
+                # Writes popIDs to file in .ped format
+                fout.write(str(patt) + "\t" + str(dataset.loci) + "\n")
+
+            elif arguments.admixture and arguments.popmap:
+                # If popmap flag: Writes PopMap file only
+                make_popmap(dataset.id, popid)
+
+            elif arguments.popmap and arguments.chars:
+                # Writes popmap with regex pattern for popID instead of integers
+                make_popmap(dataset.id, str(patt))
+                
+            elif arguments.phylip and not arguments.popmap and arguments.chars:
+                fout.write(dataset.id + "\t" + str(patt) + "\t" + dataset.loci + "\n")
+                
+            elif arguments.popmap:
+                # if -p flag: Only writes two-column popmap to file
+                make_popmap(dataset.id, popid)
+
+            else:
+                # Write STRUCTURE file with popIDs inserted
+                fout.write(str(dataset.id) + "\t" + str(popid) + "\t" + str(dataset.loci) + "\n")
