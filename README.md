@@ -2,7 +2,7 @@
 Bradley T. Martin, University of Arkansas; 
 E-mail: btm002@email.uark.edu*
 
-## Python Script to add a population map to STRUCTURE, PHYLIP, and .ped (PLINK) files.
+## Python Script to add a population map to STRUCTURE, PHYLIP, and .ped (PLINK) files. Also can write just a PopMap file.  
 
 Uses Python 2 or 3
 
