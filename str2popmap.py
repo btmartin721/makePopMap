@@ -21,7 +21,7 @@ def Get_Arguments():
     parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; If flag is used, specifies PHYLIP input/output file")
     parser.add_argument("-a", "--admixture", action="store_true", help="Boolean; If used, specifies .ped input/output file")
     parser.add_argument("-c", "--chars", action="store_true", help="Boolean; outputs population pattern instead of integer")
-
+    parser.add_argument("-i", "--ignore_case", action="store_true", help="Boolean; Ignore case in setting populations")
     args = parser.parse_args()
 
     return args
@@ -61,7 +61,7 @@ def check_if_exists(filename):
 def make_popmap(sample, pop):
 
     fout.write(str(sample) + "\t" + str(pop) + "\n")
-    
+
 def check_if_phylip(infile):
 
     f = open(infile, "r")
@@ -78,7 +78,7 @@ def check_if_phylip(infile):
         is_phylip = "phylip"
     else:
         is_phylip = "not_phylip"
-    
+
     return is_phylip
 
 ################################################################################################################
@@ -98,11 +98,11 @@ file_type = check_if_phylip(arguments.file)
 
 with open(arguments.file, "r") as fin:
     with open(arguments.outfile, "w") as fout:
-    
+
         if arguments.phylip and file_type == "not_phylip":
             print("\n\nError: [-t] option requires phylip formatted infile\n\n")
             sys.exit(1)
-            
+
         if file_type == "phylip":
             header = fin.readline()
 
@@ -113,14 +113,16 @@ with open(arguments.file, "r") as fin:
             ids, loc = read_infile(lines)
             # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
             dataset = Struct(ids, loc)
-            
+
             # pattern = characters arguments.start to arguments.end in dataset.id
             patt = dataset.id[arguments.start-1:arguments.end]
+            if arguments.ignore_case:
+                patt = patt.upper()
 
             popnum = get_unique_identifiers(patt, unique_ids, popnum)  # Returns popID and adds 1 for each unique ID
 
             popid = unique_ids[patt]   # dictionary with unique ids (key), popID (value)
-            
+
             if arguments.admixture and not arguments.popmap:
                 # Writes popIDs to file in .ped format
                 fout.write(str(patt) + "\t" + str(dataset.loci) + "\n")
@@ -132,10 +134,10 @@ with open(arguments.file, "r") as fin:
             elif arguments.popmap and arguments.chars:
                 # Writes popmap with regex pattern for popID instead of integers
                 make_popmap(dataset.id, str(patt))
-                
+
             elif arguments.phylip and not arguments.popmap and arguments.chars:
                 fout.write(dataset.id + "\t" + str(patt) + "\t" + dataset.loci + "\n")
-                
+
             elif arguments.popmap:
                 # if -p flag: Only writes two-column popmap to file
                 make_popmap(dataset.id, popid)
