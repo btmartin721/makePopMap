@@ -8,20 +8,25 @@ from datastruct import Struct
 # Uses argparse library to parse command-line arguments; argparse must be imported
 def Get_Arguments():
 
-    parser = argparse.ArgumentParser(description="Adds PopMap to structure file based on sample ID patterns")
+    parser = argparse.ArgumentParser(description="Adds PopMap to structure file based on sample ID patterns"
+                                                "Also can generate a popmap file from multiple input types."
+                                                "Population IDs can be integers or characters.")
 
-    parser.add_argument("-f", "--file", type=str, required=True, help="Input filename")
+    required_args = parser.add_argument_group("required arguments:\n")
+    required_args.add_argument("-f", "--file", type=str, required=True, help="Input filename")
     parser.add_argument("-o", "--outfile", type=str, required=False,
                         help="Output filename; Default = out.txt", nargs="?", default="out.txt")
     parser.add_argument("-s", "--start", type=int, required=False, nargs="?", default="1",
                         help="Specify first character of sample ID to be used as pattern for population ID; default=1")
     parser.add_argument("-e", "--end", type=int, required=False, nargs="?", default="4",
                         help="Specify last character of sample ID to be used as pattern for population ID; default=4")
-    parser.add_argument("-p", "--popmap", action="store_true", help="Boolean; If flag is used, just writes a popmap to file")
-    parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; If flag is used, specifies PHYLIP input/output file")
-    parser.add_argument("-a", "--admixture", action="store_true", help="Boolean; If used, specifies .ped input/output file")
+    parser.add_argument("-p", "--popmap", action="store_true", help="Boolean; Just writes a popmap to file;"
+                        "default is to add the popmap to the input file.\n")
+    parser.add_argument("-t", "--phylip", action="store_true", help="Boolean; Specifies PHYLIP input/output file")
+    parser.add_argument("-a", "--admixture", action="store_true", help="Boolean; Specifies .ped input/output file")
     parser.add_argument("-c", "--chars", action="store_true", help="Boolean; outputs population pattern instead of integer")
     parser.add_argument("-i", "--ignore_case", action="store_true", help="Boolean; Ignore case in setting populations")
+    parser.add_argument("-u", "--underscore", action="store_true", help="Boolean; Use first underscore to get population pattern")
     args = parser.parse_args()
 
     return args
@@ -81,6 +86,7 @@ def check_if_phylip(infile):
 
     return is_phylip
 
+
 ################################################################################################################
 ##############################################    MAIN    ######################################################
 ################################################################################################################
@@ -109,13 +115,24 @@ with open(arguments.file, "r") as fin:
         if arguments.phylip and not arguments.popmap:
             fout.write(str(header))
 
+        linenum = 0
         for lines in fin:
+            linenum += 1
             ids, loc = read_infile(lines)
             # Object to hold data structure: dataset.id = sample IDs, dataset.loci = all loci
             dataset = Struct(ids, loc)
 
-            # pattern = characters arguments.start to arguments.end in dataset.id
-            patt = dataset.id[arguments.start-1:arguments.end]
+            if arguments.underscore:
+                try:
+                    underscore_pos = dataset.id.index("_")
+                    patt = dataset.id[arguments.start-1:underscore_pos]
+                except ValueError:
+                    print("Error on line " + str(linenum) + ": missing underscore when -u option was used.")
+                    sys.exit(1)
+            else:
+                # pattern = characters arguments.start to arguments.end in dataset.id
+                patt = dataset.id[arguments.start-1:arguments.end]
+
             if arguments.ignore_case:
                 patt = patt.upper()
 
