@@ -155,6 +155,9 @@ with open(arguments.file, "r") as fin:
             elif arguments.phylip and not arguments.popmap and arguments.chars:
                 fout.write(dataset.id + "\t" + str(patt) + "\t" + dataset.loci + "\n")
 
+            elif not arguments.phylip and not arguments.popmap and arguments.chars:
+				fout.write("{}\t{}\t{}\n".format(dataset.id, patt, dataset.loci))
+
             elif arguments.popmap:
                 # if -p flag: Only writes two-column popmap to file
                 make_popmap(dataset.id, popid)
