@@ -2,7 +2,6 @@
 
 import argparse
 import sys
-import textwrap
 
 from datastruct import Struct
 
